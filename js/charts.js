@@ -74,3 +74,73 @@ function buildChartPerTahun(events) {
     }
   });
 }
+
+// 2. Sebaran per Pulau (Pie)
+function buildChartPulau(events) {
+  const pulauCount = {};
+  events.forEach(e => {
+    const p = pulau(e.provinsi);
+    pulauCount[p] = (pulauCount[p] || 0) + 1;
+  });
+
+  const labels = Object.keys(pulauCount);
+  const data   = Object.values(pulauCount);
+  const colors = [CHART_COLORS.blue, CHART_COLORS.orange, CHART_COLORS.green, CHART_COLORS.purple, CHART_COLORS.yellow, CHART_COLORS.red, CHART_COLORS.teal];
+
+  new Chart(document.getElementById('chart-pulau'), {
+    type: 'pie',
+    data: {
+      labels,
+      datasets: [{ data, backgroundColor: colors, borderWidth: 2, borderColor: '#1a3a5c' }]
+    },
+    options: {
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 12, padding: 10 } }
+      }
+    }
+  });
+}
+
+// 3. Korban Jiwa per Tahun (Line)
+function buildChartKorban(events) {
+  const years = ['2020','2021','2022','2023','2024'];
+  const jiwa     = years.map(y => events.filter(e => e.tanggal.startsWith(y)).reduce((s,e) => s+e.korban_jiwa, 0));
+  const luka     = years.map(y => events.filter(e => e.tanggal.startsWith(y)).reduce((s,e) => s+e.luka_luka, 0));
+
+  new Chart(document.getElementById('chart-korban'), {
+    type: 'line',
+    data: {
+      labels: years,
+      datasets: [
+        {
+          label: 'Korban Jiwa',
+          data: jiwa,
+          borderColor: CHART_COLORS.red,
+          backgroundColor: 'rgba(239,68,68,0.15)',
+          tension: 0.4,
+          fill: true,
+          pointRadius: 5,
+          pointBackgroundColor: CHART_COLORS.red,
+        },
+        {
+          label: 'Luka-luka',
+          data: luka,
+          borderColor: CHART_COLORS.orange,
+          backgroundColor: 'rgba(232,93,4,0.10)',
+          tension: 0.4,
+          fill: true,
+          pointRadius: 5,
+          pointBackgroundColor: CHART_COLORS.orange,
+        }
+      ]
+    },
+    options: {
+      plugins: { legend: { position: 'top' } },
+      scales: {
+        y: { grid: { color: CHART_GRID_COLOR } },
+        x: { grid: { color: 'transparent' } },
+      }
+    }
+  });
+}
+
