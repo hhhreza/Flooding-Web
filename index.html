@@ -259,3 +259,112 @@
   </div>
 </section>
 
+<!-- ═══════════════ DATA HISTORI ═══════════════ -->
+<section id="data" class="py-20 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="text-center mb-10">
+      <span class="text-accent font-bold text-sm uppercase tracking-widest">Database</span>
+      <h2 class="text-3xl lg:text-4xl font-black text-primary mt-2">Data Historis Bencana Banjir</h2>
+    </div>
+    <!-- Filters -->
+    <div class="bg-white rounded-2xl shadow p-6 mb-6">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div>
+          <label class="text-xs font-semibold text-gray-500 uppercase mb-1 block">Cari</label>
+          <input id="search-table" type="text" placeholder="Provinsi / Kabupaten..." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-secondary"/>
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-gray-500 uppercase mb-1 block">Jenis Banjir</label>
+          <select id="filter-jenis" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-secondary">
+            <option value="">Semua Jenis</option>
+            <option value="Bandang">Bandang</option>
+            <option value="Genangan">Genangan</option>
+            <option value="Rob">Rob</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-gray-500 uppercase mb-1 block">Tahun</label>
+          <select id="filter-tahun" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-secondary">
+            <option value="">Semua Tahun</option>
+            <option value="2020">2020</option>
+            <option value="2021">2021</option>
+            <option value="2022">2022</option>
+            <option value="2023">2023</option>
+            <option value="2024">2024</option>
+          </select>
+        </div>
+        <div class="flex items-end">
+          <button id="reset-filter" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-4 py-2 rounded-lg text-sm transition">Reset Filter</button>
+        </div>
+      </div>
+    </div>
+    <!-- Table -->
+    <div class="bg-white rounded-2xl shadow overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-primary text-white">
+            <tr>
+              <th class="px-4 py-3 text-left">Tanggal</th>
+              <th class="px-4 py-3 text-left">Provinsi</th>
+              <th class="px-4 py-3 text-left">Kabupaten</th>
+              <th class="px-4 py-3 text-left">Jenis</th>
+              <th class="px-4 py-3 text-right">Tinggi (cm)</th>
+              <th class="px-4 py-3 text-right">Korban Jiwa</th>
+              <th class="px-4 py-3 text-right">Pengungsi</th>
+              <th class="px-4 py-3 text-right">Kerugian (Jt)</th>
+              <th class="px-4 py-3 text-center">Sumber</th>
+            </tr>
+          </thead>
+          <tbody id="table-body" class="divide-y divide-gray-100">
+            <!-- Diisi oleh table.js -->
+          </tbody>
+        </table>
+      </div>
+      <div id="table-footer" class="px-6 py-3 text-sm text-gray-500 border-t flex items-center justify-between">
+        <span id="table-count">Menampilkan 0 data</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ KORBAN JIWA ═══════════════ -->
+<section id="korban" class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="text-center mb-10">
+      <span class="text-accent font-bold text-sm uppercase tracking-widest">In Memoriam</span>
+      <h2 class="text-3xl lg:text-4xl font-black text-primary mt-2">Data Korban Jiwa Banjir</h2>
+      <p class="text-gray-500 mt-2">Data korban meninggal dunia akibat bencana banjir berdasarkan laporan BMKG/BNPB.</p>
+    </div>
+    <!-- Summary Cards -->
+    <div class="grid sm:grid-cols-3 gap-6 mb-10">
+      <div class="bg-red-600 text-white rounded-2xl p-6 text-center shadow-lg">
+        <div id="total-jiwa" class="text-5xl font-black mb-1">0</div>
+        <div class="text-red-200 text-sm">Total Korban Meninggal</div>
+      </div>
+      <div class="bg-orange-500 text-white rounded-2xl p-6 text-center shadow-lg">
+        <div id="total-luka" class="text-5xl font-black mb-1">0</div>
+        <div class="text-orange-100 text-sm">Total Korban Luka</div>
+      </div>
+      <div class="bg-blue-600 text-white rounded-2xl p-6 text-center shadow-lg">
+        <div id="total-pengungsi-korban" class="text-5xl font-black mb-1">0</div>
+        <div class="text-blue-100 text-sm">Total Mengungsi</div>
+      </div>
+    </div>
+    <!-- Filter -->
+    <div class="flex flex-wrap gap-3 mb-6">
+      <input id="search-korban" type="text" placeholder="Cari provinsi atau lokasi..." class="border border-gray-200 rounded-lg px-4 py-2 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-secondary"/>
+      <select id="filter-korban-tahun" class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-secondary">
+        <option value="">Semua Tahun</option>
+        <option value="2020">2020</option>
+        <option value="2021">2021</option>
+        <option value="2022">2022</option>
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+      </select>
+    </div>
+    <!-- Korban Cards Grid -->
+    <div id="korban-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Diisi oleh table.js -->
+    </div>
+  </div>
+</section>
