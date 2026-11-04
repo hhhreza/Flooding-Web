@@ -368,3 +368,97 @@
     </div>
   </div>
 </section>
+
+<!-- ═══════════════ ORANG HILANG ═══════════════ -->
+<section id="hilang" class="py-20 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="text-center mb-10">
+      <span class="text-accent font-bold text-sm uppercase tracking-widest">Bantuan Darurat</span>
+      <h2 class="text-3xl lg:text-4xl font-black text-primary mt-2">Pencarian Orang Hilang</h2>
+    </div>
+    <div class="grid lg:grid-cols-2 gap-10">
+      <!-- Search Panel -->
+      <div>
+        <div class="bg-white rounded-2xl shadow p-6 mb-6">
+          <h3 class="font-black text-primary text-lg mb-4">🔍 Cari Orang Hilang</h3>
+          <div class="space-y-3">
+            <input id="search-nama"     type="text" placeholder="Nama lengkap..."  class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-secondary"/>
+            <input id="search-nik"      type="text" placeholder="Nomor NIK..."     class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-secondary"/>
+            <select id="search-provinsi" class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-secondary">
+              <option value="">Semua Provinsi</option>
+            </select>
+            <select id="search-status-hilang" class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-secondary">
+              <option value="">Semua Status</option>
+              <option value="hilang">Hilang</option>
+              <option value="ditemukan">Ditemukan</option>
+              <option value="meninggal">Meninggal</option>
+            </select>
+            <button id="btn-search-hilang" class="w-full bg-primary hover:bg-secondary text-white font-bold py-2 rounded-lg transition">Cari Sekarang</button>
+          </div>
+        </div>
+        <!-- Results -->
+        <div id="hilang-results" class="space-y-3">
+          <!-- Diisi oleh missing.js -->
+        </div>
+      </div>
+      <!-- Report Form -->
+      <div class="bg-white rounded-2xl shadow p-6">
+        <h3 class="font-black text-primary text-lg mb-4">📢 Laporkan Orang Hilang</h3>
+        <form id="form-lapor" class="space-y-3">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs text-gray-500 font-semibold uppercase">Nama Lengkap *</label>
+              <input name="nama_lengkap" type="text" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1"/>
+            </div>
+            <div>
+              <label class="text-xs text-gray-500 font-semibold uppercase">NIK</label>
+              <input name="nik" type="text" maxlength="16" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1"/>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs text-gray-500 font-semibold uppercase">Usia</label>
+              <input name="usia" type="number" min="1" max="120" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1"/>
+            </div>
+            <div>
+              <label class="text-xs text-gray-500 font-semibold uppercase">Jenis Kelamin</label>
+              <select name="jenis_kelamin" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1">
+                <option value="L">Laki-laki</option>
+                <option value="P">Perempuan</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 font-semibold uppercase">Provinsi *</label>
+            <select name="provinsi" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1">
+              <option value="">Pilih Provinsi</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 font-semibold uppercase">Lokasi Terakhir Terlihat *</label>
+            <input name="terakhir_terlihat_lokasi" type="text" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1"/>
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 font-semibold uppercase">Tanggal Terakhir Terlihat</label>
+            <input name="terakhir_terlihat_tanggal" type="date" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1"/>
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 font-semibold uppercase">Keterangan / Ciri Fisik</label>
+            <textarea name="keterangan" rows="2" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 resize-none"></textarea>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs text-gray-500 font-semibold uppercase">Nama Pelapor *</label>
+              <input name="pelapor_nama" type="text" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1"/>
+            </div>
+            <div>
+              <label class="text-xs text-gray-500 font-semibold uppercase">No. Telp Pelapor *</label>
+              <input name="pelapor_telp" type="tel" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1"/>
+            </div>
+          </div>
+          <button type="submit" class="w-full bg-accent hover:bg-orange-600 text-white font-bold py-2 rounded-lg transition">Kirim Laporan</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
