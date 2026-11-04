@@ -144,3 +144,93 @@ function buildChartKorban(events) {
   });
 }
 
+// 4. Jenis Banjir (Doughnut)
+function buildChartJenis(events) {
+  const jenisCounts = {};
+  events.forEach(e => { jenisCounts[e.jenis_banjir] = (jenisCounts[e.jenis_banjir] || 0) + 1; });
+
+  new Chart(document.getElementById('chart-jenis'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(jenisCounts),
+      datasets: [{
+        data: Object.values(jenisCounts),
+        backgroundColor: [CHART_COLORS.red, CHART_COLORS.blue, CHART_COLORS.pink],
+        borderWidth: 2,
+        borderColor: '#1a3a5c',
+      }]
+    },
+    options: {
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 10 } } },
+      cutout: '60%',
+    }
+  });
+}
+
+// 5. Top 5 Provinsi terdampak (Horizontal Bar)
+function buildChartProvinsi(events) {
+  const provKorban = {};
+  events.forEach(e => {
+    if (!provKorban[e.provinsi]) provKorban[e.provinsi] = { kejadian: 0, korban: 0 };
+    provKorban[e.provinsi].kejadian++;
+    provKorban[e.provinsi].korban += e.korban_jiwa;
+  });
+
+  const sorted = Object.entries(provKorban)
+    .sort((a, b) => b[1].korban - a[1].korban)
+    .slice(0, 5);
+
+  new Chart(document.getElementById('chart-provinsi'), {
+    type: 'bar',
+    data: {
+      labels: sorted.map(s => s[0]),
+      datasets: [{
+        label: 'Korban Jiwa',
+        data: sorted.map(s => s[1].korban),
+        backgroundColor: CHART_COLORS.red,
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: CHART_GRID_COLOR } },
+        y: { grid: { color: 'transparent' }, ticks: { font: { size: 11 } } },
+      }
+    }
+  });
+}
+
+// 6. Total Pengungsi per Tahun (Bar)
+function buildChartPengungsi(events) {
+  const years  = ['2020','2021','2022','2023','2024'];
+  const totals = years.map(y =>
+    events.filter(e => e.tanggal.startsWith(y)).reduce((s, e) => s + e.pengungsi, 0)
+  );
+
+  new Chart(document.getElementById('chart-pengungsi'), {
+    type: 'bar',
+    data: {
+      labels: years,
+      datasets: [{
+        label: 'Jumlah Pengungsi',
+        data: totals,
+        backgroundColor: CHART_COLORS.teal,
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        y: {
+          grid: { color: CHART_GRID_COLOR },
+          ticks: { callback: v => v >= 1000 ? (v/1000)+'rb' : v }
+        },
+        x: { grid: { color: 'transparent' } },
+      }
+    }
+  });
+}
+
+window.floodCharts = { initCharts };
