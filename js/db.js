@@ -1,22 +1,13 @@
-<<<<<<< HEAD
-// db.js — IndexedDB init + complete seed data
-// Sumber data: diadaptasi dari data BMKG/BNPB (dummy/ilustratif)
-=======
 // ============================================================
 // db.js — IndexedDB init + complete seed data
 // Sumber data: diadaptasi dari data BMKG/BNPB (dummy/ilustratif)
 // ============================================================
->>>>>>> e7ed428c9f226befc39154d429573d30a9cf3d96
 
 const DB_NAME = 'banjirDB';
 const DB_VERSION = 1;
 let db;
 
-<<<<<<< HEAD
 // SEED DATA
-=======
-// ── SEED DATA ───────────────────────────────────────────────
->>>>>>> e7ed428c9f226befc39154d429573d30a9cf3d96
 
 const SEED_FLOOD_EVENTS = [
   { id:1,  provinsi:'DKI Jakarta',         kabupaten:'Jakarta Utara',      tanggal:'2020-01-01', jenis_banjir:'Genangan',  ketinggian_cm:120, luas_ha:1250, korban_jiwa:3,  luka_luka:12, pengungsi:4500, rumah_terendam:1800, kerugian_juta_rupiah:28000, sumber_data:'BPBD DKI', status:'selesai' },
@@ -96,11 +87,7 @@ const SEED_MISSING_PERSONS = [
   { id:15, nama_lengkap:'Putri Handayani',     nik:'9101010101010015', usia:19, jenis_kelamin:'P', provinsi:'Papua',              kabupaten:'Jayapura',       terakhir_terlihat_tanggal:'2020-03-16', terakhir_terlihat_lokasi:'Jl. Raya Entrop Jayapura',    foto_url:'', pelapor_nama:'Handayani Sr.',  pelapor_telp:'081234567815', status:'hilang',     keterangan:'Mahasiswi, terakhir dikontak via WhatsApp sebelum evakuasi' },
 ];
 
-<<<<<<< HEAD
 // INDEXEDDB INIT
-=======
-// ── IndexedDB INIT ───────────────────────────────────────────
->>>>>>> e7ed428c9f226befc39154d429573d30a9cf3d96
 
 function initDB() {
   return new Promise((resolve, reject) => {
@@ -170,11 +157,7 @@ async function setupDB() {
   return db;
 }
 
-<<<<<<< HEAD
 // QUERY HELPERS
-=======
-// ── QUERY HELPERS ────────────────────────────────────────────
->>>>>>> e7ed428c9f226befc39154d429573d30a9cf3d96
 
 function getAll(storeName) {
   return new Promise((resolve, reject) => {
