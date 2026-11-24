@@ -1,465 +1,307 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SiPADU — Sistem Informasi Penanggulangan Banjir Indonesia</title>
-
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <!-- Chart.js -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="SiPADU memuat peta risiko, data historis, dan pencarian orang hilang terkait bencana banjir di Indonesia.">
+  <title>SiPADU | Informasi Banjir Indonesia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
-  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="css/style.css" />
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary:   '#1a3a5c',
-            secondary: '#2563a8',
-            accent:    '#e85d04',
-            danger:    '#dc2626',
-            warning:   '#f59e0b',
-            safe:      '#16a34a',
-          }
-        }
-      }
-    }
-  </script>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans">
-
-<!-- ═══════════════ NAVBAR ═══════════════ -->
-<nav id="navbar" class="fixed top-0 w-full z-50 bg-primary shadow-lg transition-all duration-300">
-  <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
-    <!-- Logo -->
-    <a href="#beranda" class="flex items-center gap-2 text-white font-bold text-xl">
-      <svg class="w-8 h-8 text-accent" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/><path d="M3 17c1.5-1 3-1.5 4.5-1.5S10 16 12 16s3-.5 4.5-1.5S19 13 21 13v2c-1.5 1-3 1.5-4.5 1.5S14 16 12 16s-3 .5-4.5 1.5S4.5 19 3 19v-2z"/></svg>
-      <span>Si<span class="text-accent">PADU</span></span>
-    </a>
-    <!-- Desktop Nav -->
-    <ul class="hidden md:flex items-center gap-1 text-sm">
-      <li><a href="#beranda"    class="nav-link px-3 py-2 rounded text-white hover:bg-secondary transition">Beranda</a></li>
-      <li><a href="#tentang"    class="nav-link px-3 py-2 rounded text-white hover:bg-secondary transition">Tentang Banjir</a></li>
-      <li><a href="#mitigasi"   class="nav-link px-3 py-2 rounded text-white hover:bg-secondary transition">Mitigasi</a></li>
-      <li><a href="#peta"       class="nav-link px-3 py-2 rounded text-white hover:bg-secondary transition">Peta Rawan</a></li>
-      <li><a href="#data"       class="nav-link px-3 py-2 rounded text-white hover:bg-secondary transition">Data Histori</a></li>
-      <li><a href="#korban"     class="nav-link px-3 py-2 rounded text-white hover:bg-secondary transition">Korban Jiwa</a></li>
-      <li><a href="#hilang"     class="nav-link px-3 py-2 rounded text-white hover:bg-secondary transition">Orang Hilang</a></li>
-      <li><a href="#statistik"  class="nav-link px-3 py-2 rounded text-white hover:bg-secondary transition">Statistik</a></li>
-    </ul>
-    <!-- Hamburger -->
-    <button id="hamburger" class="md:hidden text-white p-2">
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-    </button>
-  </div>
-  <!-- Mobile Menu -->
-  <div id="mobile-menu" class="hidden md:hidden bg-primary border-t border-secondary px-4 pb-4">
-    <a href="#beranda"   class="mobile-link block py-2 text-white hover:text-accent">Beranda</a>
-    <a href="#tentang"   class="mobile-link block py-2 text-white hover:text-accent">Tentang Banjir</a>
-    <a href="#mitigasi"  class="mobile-link block py-2 text-white hover:text-accent">Mitigasi</a>
-    <a href="#peta"      class="mobile-link block py-2 text-white hover:text-accent">Peta Rawan Banjir</a>
-    <a href="#data"      class="mobile-link block py-2 text-white hover:text-accent">Data Histori</a>
-    <a href="#korban"    class="mobile-link block py-2 text-white hover:text-accent">Korban Jiwa</a>
-    <a href="#hilang"    class="mobile-link block py-2 text-white hover:text-accent">Orang Hilang</a>
-    <a href="#statistik" class="mobile-link block py-2 text-white hover:text-accent">Statistik</a>
-  </div>
-</nav>
-
-<!-- ═══════════════ HERO / BERANDA ═══════════════ -->
-<section id="beranda" class="pt-16 min-h-screen bg-gradient-to-br from-primary to-secondary flex flex-col justify-center">
-  <!-- Alert banner -->
-  <div class="bg-accent text-white text-center py-2 text-sm font-semibold tracking-wide animate-pulse">
-    ⚠️ SISTEM INFORMASI AKTIF — DATA DIPERBARUI SECARA BERKALA DARI BMKG/BNPB
-  </div>
-  <div class="max-w-7xl mx-auto px-4 py-16 flex flex-col lg:flex-row items-center gap-12">
-    <div class="flex-1 text-white">
-      <span class="inline-block bg-accent text-white text-xs font-bold px-3 py-1 rounded-full mb-4 uppercase tracking-widest">Platform Kebencanaan</span>
-      <h1 class="text-4xl lg:text-6xl font-black leading-tight mb-6">
-        Sistem Informasi<br/>
-        <span class="text-accent">Penanggulangan</span><br/>
-        Banjir Indonesia
-      </h1>
-      <p class="text-blue-200 text-lg mb-8 max-w-xl">Platform terpadu pemantauan, data historis, peta rawan banjir, dan pencarian korban bencana banjir di seluruh Indonesia.</p>
-      <div class="flex flex-wrap gap-3">
-        <a href="#peta"  class="bg-accent hover:bg-orange-600 text-white font-bold px-6 py-3 rounded-lg transition">Lihat Peta Rawan</a>
-        <a href="#data"  class="border-2 border-white text-white hover:bg-white hover:text-primary font-bold px-6 py-3 rounded-lg transition">Data Bencana</a>
+<body>
+  <!-- // NAVIGATION -->
+  <nav id="navbar" class="masthead" aria-label="Navigasi utama">
+    <div class="container masthead__inner">
+      <a class="wordmark" href="#beranda" aria-label="SiPADU, kembali ke beranda">
+        <span class="wordmark__mark" aria-hidden="true"></span>
+        <span>SiPADU</span>
+      </a>
+      <button id="hamburger" class="menu-button" type="button" aria-expanded="false" aria-controls="mobile-menu">
+        <span class="menu-button__label">Menu</span>
+        <span class="menu-button__bars" aria-hidden="true"></span>
+      </button>
+      <ul id="desktop-menu" class="nav-list">
+        <li><a class="nav-link" href="#tentang">Tentang</a></li>
+        <li><a class="nav-link" href="#mitigasi">Mitigasi</a></li>
+        <li><a class="nav-link" href="#peta">Peta</a></li>
+        <li><a class="nav-link" href="#data">Data</a></li>
+        <li><a class="nav-link" href="#korban">Korban</a></li>
+        <li><a class="nav-link" href="#hilang">Orang hilang</a></li>
+        <li><a class="nav-link" href="#statistik">Statistik</a></li>
+      </ul>
+    </div>
+    <div id="mobile-menu" class="mobile-menu" hidden>
+      <div class="container">
+        <a class="mobile-link" href="#tentang">Tentang</a>
+        <a class="mobile-link" href="#mitigasi">Mitigasi</a>
+        <a class="mobile-link" href="#peta">Peta</a>
+        <a class="mobile-link" href="#data">Data</a>
+        <a class="mobile-link" href="#korban">Korban</a>
+        <a class="mobile-link" href="#hilang">Orang hilang</a>
+        <a class="mobile-link" href="#statistik">Statistik</a>
       </div>
     </div>
-    <!-- Quick Stats -->
-    <div class="grid grid-cols-2 gap-4 w-full max-w-sm">
-      <div class="bg-white/10 backdrop-blur rounded-2xl p-5 text-center text-white">
-        <div id="stat-kejadian" class="text-4xl font-black text-accent">0</div>
-        <div class="text-sm mt-1 text-blue-200">Total Kejadian</div>
-      </div>
-      <div class="bg-white/10 backdrop-blur rounded-2xl p-5 text-center text-white">
-        <div id="stat-korban" class="text-4xl font-black text-accent">0</div>
-        <div class="text-sm mt-1 text-blue-200">Korban Jiwa</div>
-      </div>
-      <div class="bg-white/10 backdrop-blur rounded-2xl p-5 text-center text-white">
-        <div id="stat-pengungsi" class="text-4xl font-black text-accent">0</div>
-        <div class="text-sm mt-1 text-blue-200">Total Pengungsi</div>
-      </div>
-      <div class="bg-white/10 backdrop-blur rounded-2xl p-5 text-center text-white">
-        <div id="stat-provinsi" class="text-4xl font-black text-accent">0</div>
-        <div class="text-sm mt-1 text-blue-200">Provinsi Terdampak</div>
-      </div>
-    </div>
-  </div>
-</section>
+  </nav>
 
-<!-- ═══════════════ TENTANG BANJIR ═══════════════ -->
- <section id="tentang" class="py-20 bg-white">
-  <div class="max-w-7xl mx-auto px-4">
-    <div class="text-center mb-14">
-      <span class="text-accent font-bold text-sm uppercase tracking-widest">Edukasi</span>
-      <h2 class="text-3xl lg:text-4xl font-black text-primary mt-2">Apa Itu Banjir?</h2>
-    </div>
-    <div class="grid md:grid-cols-2 gap-10 items-center mb-16">
+  <main>
+    <!-- // BERANDA -->
+    <section id="beranda" class="hero">
+      <div class="container hero__grid">
+        <div class="hero__copy">
+          <h1>Peta dan catatan banjir Indonesia</h1>
+          <p class="lead">Telusuri wilayah rawan, dampak kejadian, dan laporan orang hilang.</p>
+          <div class="hero__actions">
+            <a class="btn btn--primary" href="#peta">Lihat peta rawan</a>
+            <a class="btn btn--quiet" href="#data">Buka data</a>
+          </div>
+        </div>
+        <aside class="hero__board" aria-label="Ringkasan data banjir">
+          <header class="board__head">
+            <span>Ringkasan kejadian</span>
+            <span>Data tersimpan</span>
+          </header>
+          <dl class="board__stats">
+            <div><dt>Kejadian</dt><dd id="stat-kejadian" class="figure">0</dd></div>
+            <div><dt>Korban jiwa</dt><dd id="stat-korban" class="figure">0</dd></div>
+            <div><dt>Pengungsi</dt><dd id="stat-pengungsi" class="figure">0</dd></div>
+            <div><dt>Provinsi</dt><dd id="stat-provinsi" class="figure">0</dd></div>
+          </dl>
+          <footer class="board__foot">
+            <span>Jumlah tercatat</span>
+            <span>Per provinsi</span>
+          </footer>
+        </aside>
+      </div>
+    </section>
+
+    <!-- // TENTANG -->
+    <section id="tentang" class="section">
+      <div class="container">
+        <div class="section-head">
+          <h2>Apa itu banjir</h2>
+          <p class="lead">Terbenamnya daratan ketika air melampaui kapasitas sungai, saluran, atau danau.</p>
+        </div>
+        <div class="about-grid">
+          <div class="about-copy">
+            <p>Banjir adalah peristiwa hidrometeorologi yang sering terjadi di Indonesia. Kondisi memburuk saat aliran air naik cepat atau permukaan pesisir mengalami rob.</p>
+          </div>
+          <div class="flood-types">
+            <div><strong>Bandang</strong><span>Naik cepat, aliran kuat</span></div>
+            <div><strong>Genangan</strong><span>Air menetap di daratan</span></div>
+            <div><strong>Rob</strong><span>Pasang air laut ke darat</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- // MITIGASI -->
+    <section id="mitigasi" class="section section--paper">
+      <div class="container">
+        <div class="section-head">
+          <h2>Mitigasi lapangan</h2>
+          <p class="lead">Tiga langkah yang mengikuti fase bencana.</p>
+        </div>
+        <ol class="mitigation-grid">
+          <li><span class="step-number">1</span><div><h3>Sebelum</h3><p>Siapkan tas siaga, kenali jalur evakuasi, dan simpan nomor darurat BPBD 117 atau Basarnas 115.</p></div></li>
+          <li><span class="step-number">2</span><div><h3>Saat</h3><p>Evakuasi ke tempat lebih tinggi, matikan listrik, dan hindari arus serta kabel terendam.</p></div></li>
+          <li><span class="step-number">3</span><div><h3>Sesudah</h3><p>Tunggu izin pihak berwenang sebelum kembali dan laporkan kerusakan untuk pendataan bantuan.</p></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- // PETA -->
+    <section id="peta" class="section">
+      <div class="container">
+        <div class="section-head section-head--split">
+          <h2>Peta wilayah rawan</h2>
+          <p>Pilih marker untuk membaca risiko dan rekomendasi.</p>
+        </div>
+        <div class="map-frame">
+          <div id="map" role="region" aria-label="Peta wilayah rawan banjir"></div>
+        </div>
+        <div class="risk-tally" aria-label="Jumlah zona risiko">
+          <div><span>Tinggi</span><strong id="count-high" class="figure">0</strong></div>
+          <div><span>Sedang</span><strong id="count-medium" class="figure">0</strong></div>
+          <div><span>Rendah</span><strong id="count-low" class="figure">0</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- // DATA HISTORIS -->
+    <section id="data" class="section section--ink">
+      <div class="container">
+        <div class="section-head section-head--ink">
+          <h2>Data historis</h2>
+          <p>Saring kejadian berdasarkan nama lokasi, jenis, atau tahun.</p>
+        </div>
+        <div class="filters" aria-label="Penyaring data">
+          <label>Cari<input id="search-table" type="search" placeholder="Provinsi atau kabupaten"></label>
+          <label>Jenis<select id="filter-jenis"><option value="">Semua jenis</option><option value="Bandang">Bandang</option><option value="Genangan">Genangan</option><option value="Rob">Rob</option></select></label>
+          <label>Tahun<select id="filter-tahun"><option value="">Semua tahun</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option></select></label>
+          <button id="reset-filter" class="btn btn--quiet btn--ink" type="button">Reset</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Tanggal</th><th>Provinsi</th><th>Kabupaten</th><th>Jenis</th><th class="num">Tinggi (cm)</th><th class="num">Korban</th><th class="num hide-mobile">Pengungsi</th><th class="num hide-mobile">Kerugian (Jt)</th><th class="hide-mobile">Sumber</th></tr></thead>
+            <tbody id="table-body"></tbody>
+          </table>
+          <div id="table-footer" class="table-footer"><span id="table-count">Menampilkan 0 data</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- // KORBAN -->
+    <section id="korban" class="section">
+      <div class="container">
+        <div class="section-head section-head--split">
+          <h2>Korban jiwa</h2>
+          <p>Ringkasan dampak berdasarkan laporan BMKG dan BNPB.</p>
+        </div>
+        <div class="victim-tally">
+          <div><span>Meninggal</span><strong id="total-jiwa" class="figure">0</strong></div>
+          <div><span>Luka-luka</span><strong id="total-luka" class="figure">0</strong></div>
+          <div><span>Mengungsi</span><strong id="total-pengungsi-korban" class="figure">0</strong></div>
+        </div>
+        <div class="filters filters--inline">
+          <label>Cari lokasi<input id="search-korban" type="search" placeholder="Provinsi atau lokasi"></label>
+          <label>Tahun<select id="filter-korban-tahun"><option value="">Semua tahun</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option></select></label>
+        </div>
+        <div id="korban-grid" class="korban-grid"></div>
+      </div>
+    </section>
+
+    <!-- // ORANG HILANG -->
+    <section id="hilang" class="section section--paper">
+      <div class="container">
+        <div class="section-head">
+          <h2>Pencarian orang hilang</h2>
+          <p class="lead">Cari laporan atau kirim data orang yang belum ditemukan.</p>
+        </div>
+        <div class="missing-layout">
+          <div class="search-panel">
+            <h3>Cari laporan</h3>
+            <div class="missing-search">
+              <label>Nama<input id="search-nama" type="search" placeholder="Nama lengkap"></label>
+              <label>NIK<input id="search-nik" type="search" placeholder="Nomor NIK" inputmode="numeric"></label>
+              <label>Provinsi<select id="search-provinsi"><option value="">Semua provinsi</option></select></label>
+              <label>Status<select id="search-status-hilang"><option value="">Semua status</option><option value="hilang">Hilang</option><option value="ditemukan">Ditemukan</option><option value="meninggal">Meninggal</option></select></label>
+              <button id="btn-search-hilang" class="btn btn--primary" type="button">Cari sekarang</button>
+            </div>
+            <div id="hilang-results" class="missing-results"></div>
+          </div>
+          <form id="form-lapor" class="report-form">
+            <h3>Laporkan orang hilang</h3>
+            <div class="form-grid">
+              <label>Nama lengkap *<input name="nama_lengkap" type="text" required></label>
+              <label>NIK<input name="nik" type="text" maxlength="16"></label>
+              <label>Usia<input name="usia" type="number" min="1" max="120"></label>
+              <label>Jenis kelamin<select name="jenis_kelamin"><option value="L">Laki-laki</option><option value="P">Perempuan</option></select></label>
+              <label class="span-2">Provinsi *<select name="provinsi" required><option value="">Pilih provinsi</option></select></label>
+              <label class="span-2">Lokasi terakhir terlihat *<input name="terakhir_terlihat_lokasi" type="text" required></label>
+              <label class="span-2">Tanggal terakhir terlihat<input name="terakhir_terlihat_tanggal" type="date"></label>
+              <label class="span-2">Keterangan / ciri fisik<textarea name="keterangan" rows="3"></textarea></label>
+              <label>Nama pelapor *<input name="pelapor_nama" type="text" required></label>
+              <label>No. telp pelapor *<input name="pelapor_telp" type="tel" required></label>
+            </div>
+            <button type="submit" class="btn btn--primary">Kirim laporan</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- // STATISTIK -->
+    <section id="statistik" class="section">
+      <div class="container">
+        <div class="section-head section-head--split">
+          <h2>Ringkasan riwayat banjir</h2>
+          <p>Pola kejadian, wilayah, dan dampak dari data yang tersimpan.</p>
+        </div>
+        <div class="chart-grid">
+          <figure class="chart-panel chart-panel--annual">
+            <figcaption class="chart-panel__caption">
+              <h3>Kejadian per tahun</h3>
+              <p>Jumlah catatan menurut tahun kejadian.</p>
+            </figcaption>
+            <div class="chart-plot chart-plot--large">
+              <canvas id="chart-pertahun" role="img" aria-label="Grafik kejadian banjir per tahun">Grafik kejadian banjir per tahun.</canvas>
+            </div>
+          </figure>
+          <figure class="chart-panel chart-panel--islands">
+            <figcaption class="chart-panel__caption">
+              <h3>Sebaran per pulau</h3>
+              <p>Jumlah kejadian berdasarkan wilayah pulau.</p>
+            </figcaption>
+            <div class="chart-plot">
+              <canvas id="chart-pulau" role="img" aria-label="Grafik sebaran kejadian banjir per pulau">Grafik sebaran kejadian banjir per pulau.</canvas>
+            </div>
+          </figure>
+          <figure class="chart-panel chart-panel--victims">
+            <figcaption class="chart-panel__caption">
+              <h3>Korban tiap tahun</h3>
+            </figcaption>
+            <div class="chart-plot chart-plot--large">
+              <canvas id="chart-korban" role="img" aria-label="Grafik korban meninggal dan luka-luka per tahun">Grafik korban meninggal dan luka-luka per tahun.</canvas>
+            </div>
+          </figure>
+          <figure class="chart-panel chart-panel--provinces">
+            <figcaption class="chart-panel__caption">
+              <h3>Lima provinsi dengan korban jiwa terbanyak</h3>
+              <p>Diurutkan menurut jumlah meninggal yang tercatat.</p>
+            </figcaption>
+            <div class="chart-plot">
+              <canvas id="chart-provinsi" role="img" aria-label="Lima provinsi dengan kejadian banjir terbanyak">Lima provinsi dengan kejadian banjir terbanyak.</canvas>
+            </div>
+          </figure>
+          <figure class="chart-panel chart-panel--displaced">
+            <figcaption class="chart-panel__caption">
+              <h3>Pengungsi per tahun</h3>
+              <p>Jumlah pengungsi yang tercatat pada tiap tahun.</p>
+            </figcaption>
+            <div class="chart-plot">
+              <canvas id="chart-pengungsi" role="img" aria-label="Grafik jumlah pengungsi per tahun">Grafik jumlah pengungsi per tahun.</canvas>
+            </div>
+          </figure>
+          <figure class="chart-panel chart-panel--types">
+            <figcaption class="chart-panel__caption">
+              <h3>Jenis kejadian</h3>
+              <p>Komposisi genangan, banjir bandang, dan rob.</p>
+            </figcaption>
+            <div class="chart-plot">
+              <canvas id="chart-jenis" role="img" aria-label="Grafik komposisi jenis banjir">Grafik komposisi jenis banjir.</canvas>
+            </div>
+          </figure>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- // FOOTER -->
+  <footer class="footer">
+    <div class="container footer__inner">
       <div>
-        <p class="text-gray-600 leading-relaxed mb-4">Banjir adalah peristiwa terbenamnya daratan akibat volume air yang melebihi kapasitas tampung saluran air, sungai, atau danau sehingga meluap dan menggenangi daerah sekitarnya.</p>
-        <p class="text-gray-600 leading-relaxed">Di Indonesia, banjir merupakan bencana hidrometeorologi yang paling sering terjadi. BMKG mencatat rata-rata lebih dari 700 kejadian banjir per tahun dengan puncak musim banjir pada November–Maret.</p>
+        <p class="wordmark wordmark--footer">SiPADU</p>
+        <p>Sistem informasi penanggulangan banjir Indonesia.</p>
       </div>
-      <div class="grid grid-cols-3 gap-4">
-        <div class="jenis-card bg-blue-50 border-2 border-blue-200 rounded-xl p-4 text-center hover:border-accent transition">
-          <div class="text-3xl mb-2">🌊</div>
-          <div class="font-bold text-primary text-sm">Banjir Bandang</div>
-          <div class="text-xs text-gray-500 mt-1">Arus deras disertai material sedimen & kayu</div>
-        </div>
-        <div class="jenis-card bg-blue-50 border-2 border-blue-200 rounded-xl p-4 text-center hover:border-accent transition">
-          <div class="text-3xl mb-2">🌊</div>
-          <div class="font-bold text-primary text-sm">Banjir Rob</div>
-          <div class="text-xs text-gray-500 mt-1">Genangan air laut akibat pasang di daerah pesisir</div>
-        </div>
-        <div class="jenis-card bg-blue-50 border-2 border-blue-200 rounded-xl p-4 text-center hover:border-accent transition">
-          <div class="text-3xl mb-2">💧</div>
-          <div class="font-bold text-primary text-sm">Banjir Genangan</div>
-          <div class="text-xs text-gray-500 mt-1">Akumulasi curah hujan melebihi kapasitas drainase</div>
-        </div>
-      </div>
-    </div>
-    <!-- Penyebab -->
-    <h3 class="text-2xl font-black text-primary mb-8 text-center">Penyebab Utama Banjir</h3>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div class="penyebab-card bg-gray-50 rounded-xl p-6 border-l-4 border-accent">
-        <div class="text-2xl mb-3">🌧️</div>
-        <h4 class="font-bold text-primary mb-2">Curah Hujan Tinggi</h4>
-        <p class="text-sm text-gray-500">Intensitas hujan melebihi kapasitas resapan tanah dan sungai dalam waktu singkat.</p>
-      </div>
-      <div class="penyebab-card bg-gray-50 rounded-xl p-6 border-l-4 border-accent">
-        <div class="text-2xl mb-3">🌲</div>
-        <h4 class="font-bold text-primary mb-2">Deforestasi</h4>
-        <p class="text-sm text-gray-500">Alih fungsi hutan mengurangi kemampuan tanah menyerap air hujan secara signifikan.</p>
-      </div>
-      <div class="penyebab-card bg-gray-50 rounded-xl p-6 border-l-4 border-accent">
-        <div class="text-2xl mb-3">🏙️</div>
-        <h4 class="font-bold text-primary mb-2">Urbanisasi Tak Terencana</h4>
-        <p class="text-sm text-gray-500">Perluasan beton & aspal mengurangi lahan resapan air di perkotaan.</p>
-      </div>
-      <div class="penyebab-card bg-gray-50 rounded-xl p-6 border-l-4 border-accent">
-        <div class="text-2xl mb-3">🗑️</div>
-        <h4 class="font-bold text-primary mb-2">Pendangkalan Sungai</h4>
-        <p class="text-sm text-gray-500">Sedimentasi dan sampah mempersempit kapasitas alur sungai mengalirkan debit besar.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════ MITIGASI ═══════════════ -->
-<section id="mitigasi" class="py-20 bg-gray-50">
-  <div class="max-w-7xl mx-auto px-4">
-    <div class="text-center mb-14">
-      <span class="text-accent font-bold text-sm uppercase tracking-widest">Keselamatan</span>
-      <h2 class="text-3xl lg:text-4xl font-black text-primary mt-2">Mitigasi & Penanggulangan</h2>
-    </div>
-    <div class="grid md:grid-cols-3 gap-8">
-      <!-- Sebelum -->
-      <div class="bg-white rounded-2xl shadow p-6 border-t-4 border-warning">
-        <div class="text-warning font-black text-lg mb-4 flex items-center gap-2">
-          <span class="bg-warning text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">1</span> Sebelum Banjir
-        </div>
-        <ul class="space-y-3 text-sm text-gray-600">
-          <li class="flex gap-2"><span class="text-warning mt-1">▶</span> Siapkan tas siaga bencana (dokumen, obat, pakaian 3 hari)</li>
-          <li class="flex gap-2"><span class="text-warning mt-1">▶</span> Kenali jalur evakuasi dan titik kumpul terdekat</li>
-          <li class="flex gap-2"><span class="text-warning mt-1">▶</span> Simpan nomor darurat: BPBD 117, Basarnas 115</li>
-          <li class="flex gap-2"><span class="text-warning mt-1">▶</span> Pasang alarm dini berbasis peringatan BMKG</li>
-          <li class="flex gap-2"><span class="text-warning mt-1">▶</span> Amankan barang berharga ke tempat lebih tinggi</li>
-          <li class="flex gap-2"><span class="text-warning mt-1">▶</span> Bersihkan saluran air di sekitar rumah secara rutin</li>
-        </ul>
-      </div>
-      <!-- Saat -->
-      <div class="bg-white rounded-2xl shadow p-6 border-t-4 border-danger">
-        <div class="text-danger font-black text-lg mb-4 flex items-center gap-2">
-          <span class="bg-danger text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">2</span> Saat Banjir
-        </div>
-        <ul class="space-y-3 text-sm text-gray-600">
-          <li class="flex gap-2"><span class="text-danger mt-1">▶</span> Segera evakuasi ke tempat lebih tinggi jika air naik cepat</li>
-          <li class="flex gap-2"><span class="text-danger mt-1">▶</span> Matikan listrik di panel utama, hindari kabel terendam</li>
-          <li class="flex gap-2"><span class="text-danger mt-1">▶</span> Jangan menerjang arus banjir, 15cm air bisa menghanyutkan anak</li>
-          <li class="flex gap-2"><span class="text-danger mt-1">▶</span> Gunakan pelampung atau benda apung sebagai pegangan</li>
-          <li class="flex gap-2"><span class="text-danger mt-1">▶</span> Perbarui informasi via radio/BMKG, hindari hoaks</li>
-          <li class="flex gap-2"><span class="text-danger mt-1">▶</span> Prioritaskan evakuasi lansia, balita, dan disabilitas</li>
-        </ul>
-      </div>
-      <!-- Sesudah -->
-      <div class="bg-white rounded-2xl shadow p-6 border-t-4 border-safe">
-        <div class="text-safe font-black text-lg mb-4 flex items-center gap-2">
-          <span class="bg-safe text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">3</span> Sesudah Banjir
-        </div>
-        <ul class="space-y-3 text-sm text-gray-600">
-          <li class="flex gap-2"><span class="text-safe mt-1">▶</span> Tunggu izin pihak berwenang sebelum kembali ke rumah</li>
-          <li class="flex gap-2"><span class="text-safe mt-1">▶</span> Gunakan APD saat membersihkan lumpur (sarung tangan, masker)</li>
-          <li class="flex gap-2"><span class="text-safe mt-1">▶</span> Periksa struktur bangunan sebelum dihuni kembali</li>
-          <li class="flex gap-2"><span class="text-safe mt-1">▶</span> Minum air matang, waspadai penyakit pasca banjir (leptospirosis, diare)</li>
-          <li class="flex gap-2"><span class="text-safe mt-1">▶</span> Laporkan kerusakan ke BPBD untuk pendataan bantuan</li>
-          <li class="flex gap-2"><span class="text-safe mt-1">▶</span> Ikuti pemulihan psikososial jika diperlukan</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════ PETA RAWAN BANJIR ═══════════════ -->
-<section id="peta" class="py-20 bg-white">
-  <div class="max-w-7xl mx-auto px-4">
-    <div class="text-center mb-10">
-      <span class="text-accent font-bold text-sm uppercase tracking-widest">Pemetaan</span>
-      <h2 class="text-3xl lg:text-4xl font-black text-primary mt-2">Peta Wilayah Rawan Banjir</h2>
-      <p class="text-gray-500 mt-2">Klik marker pada peta untuk melihat detail risiko dan rekomendasi mitigasi per wilayah.</p>
-    </div>
-    <!-- Legend -->
-    <div class="flex flex-wrap justify-center gap-6 mb-6">
-      <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-full bg-red-500 inline-block"></span><span class="text-sm text-gray-600">Risiko Tinggi</span></div>
-      <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-full bg-yellow-400 inline-block"></span><span class="text-sm text-gray-600">Risiko Sedang</span></div>
-      <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-full bg-green-500 inline-block"></span><span class="text-sm text-gray-600">Risiko Rendah</span></div>
-    </div>
-    <!-- Map Container -->
-    <div id="map" class="w-full rounded-2xl shadow-xl overflow-hidden border border-gray-200" style="height:520px;"></div>
-    <!-- Risk Stats -->
-    <div class="grid grid-cols-3 gap-4 mt-8">
-      <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
-        <div id="count-high" class="text-3xl font-black text-red-600">0</div>
-        <div class="text-sm text-red-500 mt-1">Zona Risiko Tinggi</div>
-      </div>
-      <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 text-center">
-        <div id="count-medium" class="text-3xl font-black text-yellow-600">0</div>
-        <div class="text-sm text-yellow-500 mt-1">Zona Risiko Sedang</div>
-      </div>
-      <div class="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
-        <div id="count-low" class="text-3xl font-black text-green-600">0</div>
-        <div class="text-sm text-green-500 mt-1">Zona Risiko Rendah</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════ DATA HISTORI ═══════════════ -->
-<section id="data" class="py-20 bg-gray-50">
-  <div class="max-w-7xl mx-auto px-4">
-    <div class="text-center mb-10">
-      <span class="text-accent font-bold text-sm uppercase tracking-widest">Database</span>
-      <h2 class="text-3xl lg:text-4xl font-black text-primary mt-2">Data Historis Bencana Banjir</h2>
-    </div>
-    <!-- Filters -->
-    <div class="bg-white rounded-2xl shadow p-6 mb-6">
-      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div>
-          <label class="text-xs font-semibold text-gray-500 uppercase mb-1 block">Cari</label>
-          <input id="search-table" type="text" placeholder="Provinsi / Kabupaten..." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-secondary"/>
-        </div>
-        <div>
-          <label class="text-xs font-semibold text-gray-500 uppercase mb-1 block">Jenis Banjir</label>
-          <select id="filter-jenis" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-secondary">
-            <option value="">Semua Jenis</option>
-            <option value="Bandang">Bandang</option>
-            <option value="Genangan">Genangan</option>
-            <option value="Rob">Rob</option>
-          </select>
-        </div>
-        <div>
-          <label class="text-xs font-semibold text-gray-500 uppercase mb-1 block">Tahun</label>
-          <select id="filter-tahun" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-secondary">
-            <option value="">Semua Tahun</option>
-            <option value="2020">2020</option>
-            <option value="2021">2021</option>
-            <option value="2022">2022</option>
-            <option value="2023">2023</option>
-            <option value="2024">2024</option>
-          </select>
-        </div>
-        <div class="flex items-end">
-          <button id="reset-filter" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-4 py-2 rounded-lg text-sm transition">Reset Filter</button>
-        </div>
-      </div>
-    </div>
-    <!-- Table -->
-    <div class="bg-white rounded-2xl shadow overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead class="bg-primary text-white">
-            <tr>
-              <th class="px-4 py-3 text-left">Tanggal</th>
-              <th class="px-4 py-3 text-left">Provinsi</th>
-              <th class="px-4 py-3 text-left">Kabupaten</th>
-              <th class="px-4 py-3 text-left">Jenis</th>
-              <th class="px-4 py-3 text-right">Tinggi (cm)</th>
-              <th class="px-4 py-3 text-right">Korban Jiwa</th>
-              <th class="px-4 py-3 text-right">Pengungsi</th>
-              <th class="px-4 py-3 text-right">Kerugian (Jt)</th>
-              <th class="px-4 py-3 text-center">Sumber</th>
-            </tr>
-          </thead>
-          <tbody id="table-body" class="divide-y divide-gray-100">
-            <!-- Diisi oleh table.js -->
-          </tbody>
-        </table>
-      </div>
-      <div id="table-footer" class="px-6 py-3 text-sm text-gray-500 border-t flex items-center justify-between">
-        <span id="table-count">Menampilkan 0 data</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════ KORBAN JIWA ═══════════════ -->
-<section id="korban" class="py-20 bg-white">
-  <div class="max-w-7xl mx-auto px-4">
-    <div class="text-center mb-10">
-      <span class="text-accent font-bold text-sm uppercase tracking-widest">In Memoriam</span>
-      <h2 class="text-3xl lg:text-4xl font-black text-primary mt-2">Data Korban Jiwa Banjir</h2>
-      <p class="text-gray-500 mt-2">Data korban meninggal dunia akibat bencana banjir berdasarkan laporan BMKG/BNPB.</p>
-    </div>
-    <!-- Summary Cards -->
-    <div class="grid sm:grid-cols-3 gap-6 mb-10">
-      <div class="bg-red-600 text-white rounded-2xl p-6 text-center shadow-lg">
-        <div id="total-jiwa" class="text-5xl font-black mb-1">0</div>
-        <div class="text-red-200 text-sm">Total Korban Meninggal</div>
-      </div>
-      <div class="bg-orange-500 text-white rounded-2xl p-6 text-center shadow-lg">
-        <div id="total-luka" class="text-5xl font-black mb-1">0</div>
-        <div class="text-orange-100 text-sm">Total Korban Luka</div>
-      </div>
-      <div class="bg-blue-600 text-white rounded-2xl p-6 text-center shadow-lg">
-        <div id="total-pengungsi-korban" class="text-5xl font-black mb-1">0</div>
-        <div class="text-blue-100 text-sm">Total Mengungsi</div>
-      </div>
-    </div>
-    <!-- Filter -->
-    <div class="flex flex-wrap gap-3 mb-6">
-      <input id="search-korban" type="text" placeholder="Cari provinsi atau lokasi..." class="border border-gray-200 rounded-lg px-4 py-2 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-secondary"/>
-      <select id="filter-korban-tahun" class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-secondary">
-        <option value="">Semua Tahun</option>
-        <option value="2020">2020</option>
-        <option value="2021">2021</option>
-        <option value="2022">2022</option>
-        <option value="2023">2023</option>
-        <option value="2024">2024</option>
-      </select>
-    </div>
-    <!-- Korban Cards Grid -->
-    <div id="korban-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <!-- Diisi oleh table.js -->
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════ ORANG HILANG ═══════════════ -->
-<section id="hilang" class="py-20 bg-gray-50">
-  <div class="max-w-7xl mx-auto px-4">
-    <div class="text-center mb-10">
-      <span class="text-accent font-bold text-sm uppercase tracking-widest">Bantuan Darurat</span>
-      <h2 class="text-3xl lg:text-4xl font-black text-primary mt-2">Pencarian Orang Hilang</h2>
-    </div>
-    <div class="grid lg:grid-cols-2 gap-10">
-      <!-- Search Panel -->
       <div>
-        <div class="bg-white rounded-2xl shadow p-6 mb-6">
-          <h3 class="font-black text-primary text-lg mb-4">🔍 Cari Orang Hilang</h3>
-          <div class="space-y-3">
-            <input id="search-nama"     type="text" placeholder="Nama lengkap..."  class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-secondary"/>
-            <input id="search-nik"      type="text" placeholder="Nomor NIK..."     class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-secondary"/>
-            <select id="search-provinsi" class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-secondary">
-              <option value="">Semua Provinsi</option>
-            </select>
-            <select id="search-status-hilang" class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-secondary">
-              <option value="">Semua Status</option>
-              <option value="hilang">Hilang</option>
-              <option value="ditemukan">Ditemukan</option>
-              <option value="meninggal">Meninggal</option>
-            </select>
-            <button id="btn-search-hilang" class="w-full bg-primary hover:bg-secondary text-white font-bold py-2 rounded-lg transition">Cari Sekarang</button>
-          </div>
-        </div>
-        <!-- Results -->
-        <div id="hilang-results" class="space-y-3">
-          <!-- Diisi oleh missing.js -->
-        </div>
+        <p>Darurat BPBD 117</p>
+        <p>Basarnas 115</p>
       </div>
-      <!-- Report Form -->
-      <div class="bg-white rounded-2xl shadow p-6">
-        <h3 class="font-black text-primary text-lg mb-4">📢 Laporkan Orang Hilang</h3>
-        <form id="form-lapor" class="space-y-3">
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="text-xs text-gray-500 font-semibold uppercase">Nama Lengkap *</label>
-              <input name="nama_lengkap" type="text" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1"/>
-            </div>
-            <div>
-              <label class="text-xs text-gray-500 font-semibold uppercase">NIK</label>
-              <input name="nik" type="text" maxlength="16" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1"/>
-            </div>
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="text-xs text-gray-500 font-semibold uppercase">Usia</label>
-              <input name="usia" type="number" min="1" max="120" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1"/>
-            </div>
-            <div>
-              <label class="text-xs text-gray-500 font-semibold uppercase">Jenis Kelamin</label>
-              <select name="jenis_kelamin" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1">
-                <option value="L">Laki-laki</option>
-                <option value="P">Perempuan</option>
-              </select>
-            </div>
-          </div>
-          <div>
-            <label class="text-xs text-gray-500 font-semibold uppercase">Provinsi *</label>
-            <select name="provinsi" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1">
-              <option value="">Pilih Provinsi</option>
-            </select>
-          </div>
-          <div>
-            <label class="text-xs text-gray-500 font-semibold uppercase">Lokasi Terakhir Terlihat *</label>
-            <input name="terakhir_terlihat_lokasi" type="text" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1"/>
-          </div>
-          <div>
-            <label class="text-xs text-gray-500 font-semibold uppercase">Tanggal Terakhir Terlihat</label>
-            <input name="terakhir_terlihat_tanggal" type="date" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1"/>
-          </div>
-          <div>
-            <label class="text-xs text-gray-500 font-semibold uppercase">Keterangan / Ciri Fisik</label>
-            <textarea name="keterangan" rows="2" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 resize-none"></textarea>
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="text-xs text-gray-500 font-semibold uppercase">Nama Pelapor *</label>
-              <input name="pelapor_nama" type="text" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1"/>
-            </div>
-            <div>
-              <label class="text-xs text-gray-500 font-semibold uppercase">No. Telp Pelapor *</label>
-              <input name="pelapor_telp" type="tel" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1"/>
-            </div>
-          </div>
-          <button type="submit" class="w-full bg-accent hover:bg-orange-600 text-white font-bold py-2 rounded-lg transition">Kirim Laporan</button>
-        </form>
-      </div>
+      <a class="back-link" href="#beranda">Kembali ke atas</a>
     </div>
-  </div>
-</section>
+  </footer>
 
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden><span id="toast-inner"><span id="toast-msg"></span></span></div>
+
+  <script src="js/db.js?v=20261121e"></script>
+  <script src="js/table.js?v=20261121e"></script>
+  <script src="js/missing.js?v=20261121e"></script>
+  <script src="js/map.js?v=20261121e"></script>
+  <script src="js/charts.js?v=20261121f"></script>
+  <script src="js/app.js?v=20261121e"></script>
+</body>
+</html>

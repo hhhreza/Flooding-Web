@@ -1,8 +1,6 @@
-// ============================================================
 // app.js — Main init, navigation, toast, scroll-to-top
-// ============================================================
 
-// ── TOAST ─────────────────────────────────────────────────────
+// TOAST
 
 function showToast(message, type = 'success') {
   const toast = document.getElementById('toast');
@@ -10,23 +8,28 @@ function showToast(message, type = 'success') {
   const msg   = document.getElementById('toast-msg');
   if (!toast || !inner || !msg) return;
 
-  inner.className = `text-white px-5 py-3 rounded-xl shadow-xl text-sm font-semibold flex items-center gap-2 ${
-    type === 'error' ? 'bg-red-600' : 'bg-green-600'
-  }`;
+  inner.className = type === 'error' ? 'toast__error' : 'toast__success';
   msg.textContent = message;
-  toast.classList.remove('hidden');
-  toast.classList.add('show');
+  toast.hidden = false;
 
   setTimeout(() => {
-    toast.classList.add('hidden');
-    toast.classList.remove('show');
+    toast.hidden = true;
   }, 4000);
 }
 
-// Expose globally so other modules can use it
+// GLOBAL HELPERS
 window.showToast = showToast;
+window.escapeHTML = function(value) {
+  return String(value ?? '').replace(/[&<>"']/g, char => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  })[char]);
+};
 
-// ── HAMBURGER MENU ───────────────────────────────────────────
+// HAMBURGER MENU
 
 function initHamburger() {
   const btn   = document.getElementById('hamburger');
@@ -34,16 +37,20 @@ function initHamburger() {
   if (!btn || !menu) return;
 
   btn.addEventListener('click', () => {
-    menu.classList.toggle('hidden');
+    menu.hidden = !menu.hidden;
+    btn.setAttribute('aria-expanded', String(!menu.hidden));
   });
 
   // Close on link click
   menu.querySelectorAll('.mobile-link').forEach(link => {
-    link.addEventListener('click', () => menu.classList.add('hidden'));
+    link.addEventListener('click', () => {
+      menu.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+    });
   });
 }
 
-// ── ACTIVE NAV HIGHLIGHT ─────────────────────────────────────
+// ACTIVE NAV HIGHLIGHT
 
 function initScrollSpy() {
   const sections = document.querySelectorAll('section[id]');
@@ -68,11 +75,13 @@ function initScrollSpy() {
   sections.forEach(section => observer.observe(section));
 }
 
-// ── SCROLL TO TOP BUTTON ─────────────────────────────────────
+// SCROLL TO TOP BUTTON
 
 function initScrollTop() {
-  const btn = document.createElement('div');
+  const btn = document.createElement('button');
   btn.id = 'scroll-top';
+  btn.type = 'button';
+  btn.setAttribute('aria-label', 'Kembali ke atas');
   btn.innerHTML = `<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>`;
   document.body.appendChild(btn);
 
@@ -84,7 +93,7 @@ function initScrollTop() {
   btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 }
 
-// ── MAIN INIT ────────────────────────────────────────────────
+// MAIN INIT
 
 async function main() {
   // 1. Setup IndexedDB + seed data
@@ -92,7 +101,7 @@ async function main() {
     await window.floodDB.setupDB();
   } catch (err) {
     console.error('[APP] DB setup failed:', err);
-    showToast('⚠️ Gagal memuat database lokal.', 'error');
+    showToast('Gagal memuat database lokal.', 'error');
     return;
   }
 
@@ -127,7 +136,7 @@ async function main() {
     console.error('[APP] Charts error:', err);
   }
 
-  console.log('[APP] SiPADU fully initialized ✔');
+  console.log('[APP] SiPADU initialized.');
 }
 
 // Start when DOM is ready

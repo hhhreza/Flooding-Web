@@ -1,12 +1,11 @@
-// ============================================================
 // map.js — Leaflet map for flood risk zones
-// ============================================================
 
 let floodMap = null;
 const RISK_COLORS = { 3: '#ef4444', 2: '#f59e0b', 1: '#22c55e' };
 const RISK_LABELS = { 3: 'Tinggi', 2: 'Sedang', 1: 'Rendah' };
 const RISK_CLASS  = { 3: 'tinggi', 2: 'sedang', 1: 'rendah' };
 
+// INISIALISASI PETA
 function initMap() {
   if (floodMap) return; // already initialized
 
@@ -24,6 +23,7 @@ function initMap() {
   }).addTo(floodMap);
 }
 
+// ZONA RISIKO
 function renderRiskZones(zones) {
   if (!floodMap) return;
 
@@ -53,16 +53,16 @@ function renderRiskZones(zones) {
     ).addTo(floodMap);
 
     const faktorHTML = (zone.faktor_risiko || [])
-      .map(f => `<span class="popup-tag">${f}</span>`)
+      .map(f => `<span class="popup-tag">${window.escapeHTML(f)}</span>`)
       .join('');
 
     marker.bindPopup(`
-      <div class="popup-title">📍 ${zone.kabupaten}</div>
-      <div class="text-xs text-gray-500 mb-1">${zone.provinsi}</div>
+      <div class="popup-title">${window.escapeHTML(zone.kabupaten)}</div>
+      <div>${window.escapeHTML(zone.provinsi)}</div>
       <span class="popup-badge ${cls}">Risiko ${label}</span>
-      <div class="popup-row mt-2"><strong>Faktor Risiko:</strong></div>
-      <div class="mb-1">${faktorHTML}</div>
-      <div class="popup-rec">✅ ${zone.rekomendasi}</div>
+      <div class="popup-row"><strong>Faktor risiko:</strong></div>
+      <div>${faktorHTML}</div>
+      <div class="popup-rec">${window.escapeHTML(zone.rekomendasi)}</div>
     `, { maxWidth: 280 });
 
     marker.on('mouseover', function() { this.openPopup(); });
@@ -80,6 +80,7 @@ function renderRiskZones(zones) {
   addFloodEventLayer();
 }
 
+// LAPISAN KEJADIAN
 async function addFloodEventLayer() {
   const events = await window.floodDB.getAll('flood_events');
 
@@ -139,16 +140,16 @@ async function addFloodEventLayer() {
     const tgl = new Date(ev.tanggal).toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' });
 
     m.bindPopup(`
-      <div class="popup-title">🌊 Kejadian Banjir</div>
-      <div class="text-xs text-gray-500 mb-2">${ev.kabupaten}, ${ev.provinsi}</div>
-      <div class="popup-row">📅 ${tgl}</div>
-      <div class="popup-row">Jenis: <strong>${ev.jenis_banjir}</strong></div>
-      <div class="popup-row">Ketinggian air: <strong>${ev.ketinggian_cm} cm</strong></div>
-      <div class="popup-row">💀 Korban jiwa: <strong style="color:#dc2626">${ev.korban_jiwa} orang</strong></div>
-      <div class="popup-row">🤕 Luka-luka: <strong>${ev.luka_luka} orang</strong></div>
-      <div class="popup-row">🏠 Pengungsi: <strong>${ev.pengungsi.toLocaleString('id-ID')} orang</strong></div>
-      <div class="popup-row">💰 Kerugian: <strong>Rp ${ev.kerugian_juta_rupiah.toLocaleString('id-ID')} juta</strong></div>
-      <div class="popup-row text-xs text-gray-400 mt-1">Sumber: ${ev.sumber_data}</div>
+      <div class="popup-title">Kejadian banjir</div>
+      <div>${window.escapeHTML(ev.kabupaten)}, ${window.escapeHTML(ev.provinsi)}</div>
+      <div class="popup-row">${window.escapeHTML(tgl)}</div>
+      <div class="popup-row">Jenis: <strong>${window.escapeHTML(ev.jenis_banjir)}</strong></div>
+      <div class="popup-row">Ketinggian air: <strong>${window.escapeHTML(ev.ketinggian_cm)} cm</strong></div>
+      <div class="popup-row">Korban jiwa: <strong>${window.escapeHTML(ev.korban_jiwa)} orang</strong></div>
+      <div class="popup-row">Luka-luka: <strong>${window.escapeHTML(ev.luka_luka)} orang</strong></div>
+      <div class="popup-row">Pengungsi: <strong>${window.escapeHTML(ev.pengungsi.toLocaleString('id-ID'))} orang</strong></div>
+      <div class="popup-row">Kerugian: <strong>Rp ${window.escapeHTML(ev.kerugian_juta_rupiah.toLocaleString('id-ID'))} juta</strong></div>
+      <div class="popup-row">Sumber: ${window.escapeHTML(ev.sumber_data)}</div>
     `, { maxWidth: 260 });
   });
 
@@ -156,6 +157,7 @@ async function addFloodEventLayer() {
   addEventLegend();
 }
 
+// LEGENDA PETA
 function addEventLegend() {
   const legend = L.control({ position: 'bottomright' });
   legend.onAdd = function() {
@@ -176,4 +178,3 @@ function addEventLegend() {
 }
 
 window.floodMap = { initMap, renderRiskZones };
-

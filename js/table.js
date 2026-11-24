@@ -1,10 +1,8 @@
-// ============================================================
 // table.js — Data table (histori bencana) + Korban Jiwa cards
-// ============================================================
 
 let allEvents = [];
 
-// ── RENDER DATA TABLE ────────────────────────────────────────
+// RENDER DATA TABLE
 
 function renderTable(data) {
   const tbody = document.getElementById('table-body');
@@ -12,40 +10,33 @@ function renderTable(data) {
   if (!tbody) return;
 
   if (data.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="9" class="text-center py-12 text-gray-400">Tidak ada data yang sesuai filter.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9">Tidak ada data yang sesuai filter.</td></tr>`;
     if (counter) counter.textContent = 'Menampilkan 0 data';
     return;
   }
 
-  tbody.innerHTML = data
+  tbody.innerHTML = [...data]
     .sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal))
     .map(ev => {
       const tgl = new Date(ev.tanggal).toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' });
-      const badgeClass = {
-        'Bandang':  'badge-bandang',
-        'Genangan': 'badge-genangan',
-        'Rob':      'badge-rob',
-      }[ev.jenis_banjir] || 'badge-genangan';
 
-      const korbanColor = ev.korban_jiwa > 0 ? 'text-red-600 font-bold' : 'text-gray-500';
-
-      return `<tr class="hover:bg-blue-50 transition-colors">
-        <td class="px-4 py-3 text-gray-600 whitespace-nowrap">${tgl}</td>
-        <td class="px-4 py-3 font-semibold text-primary">${ev.provinsi}</td>
-        <td class="px-4 py-3 text-gray-600">${ev.kabupaten}</td>
-        <td class="px-4 py-3"><span class="${badgeClass}">${ev.jenis_banjir}</span></td>
-        <td class="px-4 py-3 text-right tabular-nums">${ev.ketinggian_cm}</td>
-        <td class="px-4 py-3 text-right tabular-nums ${korbanColor}">${ev.korban_jiwa}</td>
-        <td class="px-4 py-3 text-right tabular-nums hide-mobile">${ev.pengungsi.toLocaleString('id-ID')}</td>
-        <td class="px-4 py-3 text-right tabular-nums hide-mobile">${ev.kerugian_juta_rupiah.toLocaleString('id-ID')}</td>
-        <td class="px-4 py-3 text-center hide-mobile"><span class="text-xs text-gray-400">${ev.sumber_data}</span></td>
+      return `<tr>
+        <td>${window.escapeHTML(tgl)}</td>
+        <td>${window.escapeHTML(ev.provinsi)}</td>
+        <td>${window.escapeHTML(ev.kabupaten)}</td>
+        <td>${window.escapeHTML(ev.jenis_banjir)}</td>
+        <td class="num">${window.escapeHTML(ev.ketinggian_cm)}</td>
+        <td class="num">${window.escapeHTML(ev.korban_jiwa)}</td>
+        <td class="num hide-mobile">${window.escapeHTML(ev.pengungsi.toLocaleString('id-ID'))}</td>
+        <td class="num hide-mobile">${window.escapeHTML(ev.kerugian_juta_rupiah.toLocaleString('id-ID'))}</td>
+        <td class="hide-mobile">${window.escapeHTML(ev.sumber_data)}</td>
       </tr>`;
     }).join('');
 
   if (counter) counter.textContent = `Menampilkan ${data.length} data`;
 }
 
-// ── FILTER LOGIC ─────────────────────────────────────────────
+// FILTER LOGIC
 
 function applyFilters() {
   const searchVal = (document.getElementById('search-table')?.value || '').toLowerCase();
@@ -76,7 +67,7 @@ function bindTableFilters() {
   });
 }
 
-// ── KORBAN JIWA SECTION ──────────────────────────────────────
+// KORBAN JIWA SECTION
 
 function renderKorbanGrid(data) {
   const grid = document.getElementById('korban-grid');
@@ -87,42 +78,34 @@ function renderKorbanGrid(data) {
     .sort((a, b) => b.korban_jiwa - a.korban_jiwa);
 
   if (withVictims.length === 0) {
-    grid.innerHTML = `<div class="col-span-3 text-center text-gray-400 py-8">Tidak ada data korban untuk filter ini.</div>`;
+    grid.innerHTML = `<p>Tidak ada data korban untuk filter ini.</p>`;
     return;
   }
 
   grid.innerHTML = withVictims.map(ev => {
     const tgl  = new Date(ev.tanggal).toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' });
     const sev  = ev.korban_jiwa >= 10 ? 'high' : ev.korban_jiwa > 0 ? 'med' : 'none';
-    const emoji = ev.jenis_banjir === 'Bandang' ? '🌊' : ev.jenis_banjir === 'Rob' ? '🌊' : '💧';
-
-    return `<div class="korban-card bg-white rounded-xl shadow p-5 ${sev}">
-      <div class="flex items-start justify-between mb-3">
+    return `<article class="korban-card ${sev}">
+      <div class="korban-card__head">
         <div>
-          <div class="font-black text-primary text-base">${ev.kabupaten}</div>
-          <div class="text-xs text-gray-500">${ev.provinsi} · ${tgl}</div>
+          <strong>${window.escapeHTML(ev.kabupaten)}</strong>
+          <p>${window.escapeHTML(ev.provinsi)} | ${window.escapeHTML(tgl)}</p>
         </div>
-        <span class="text-2xl">${emoji}</span>
+        <span>${window.escapeHTML(ev.jenis_banjir)}</span>
       </div>
-      <div class="grid grid-cols-2 gap-3 mb-3">
-        <div class="bg-red-50 rounded-lg p-3 text-center">
-          <div class="text-2xl font-black text-red-600">${ev.korban_jiwa}</div>
-          <div class="text-xs text-red-400 mt-1">Meninggal</div>
+      <div class="korban-card__counts">
+        <div>
+          <strong>${window.escapeHTML(ev.korban_jiwa)}</strong>
+          <span>Meninggal</span>
         </div>
-        <div class="bg-orange-50 rounded-lg p-3 text-center">
-          <div class="text-2xl font-black text-orange-500">${ev.luka_luka}</div>
-          <div class="text-xs text-orange-400 mt-1">Luka-luka</div>
+        <div>
+          <strong>${window.escapeHTML(ev.luka_luka)}</strong>
+          <span>Luka-luka</span>
         </div>
       </div>
-      <div class="flex items-center justify-between text-xs text-gray-500">
-        <span>🏠 ${ev.pengungsi.toLocaleString('id-ID')} pengungsi</span>
-        <span class="font-semibold">${ev.jenis_banjir}</span>
-      </div>
-      <div class="mt-2 text-xs text-gray-400 flex items-center justify-between">
-        <span>Ketinggian air: ${ev.ketinggian_cm} cm</span>
-        <span>Sumber: ${ev.sumber_data}</span>
-      </div>
-    </div>`;
+      <p>${window.escapeHTML(ev.pengungsi.toLocaleString('id-ID'))} pengungsi</p>
+      <p>Ketinggian ${window.escapeHTML(ev.ketinggian_cm)} cm | ${window.escapeHTML(ev.sumber_data)}</p>
+    </article>`;
   }).join('');
 }
 
@@ -146,7 +129,7 @@ function filterKorban() {
   renderKorbanGrid(filtered);
 }
 
-// ── HERO STATS ───────────────────────────────────────────────
+// HERO STATS
 
 function animateCount(el, target) {
   if (!el) return;
@@ -176,7 +159,7 @@ function updateHeroStats(events) {
   animateCount(document.getElementById('total-pengungsi-korban'), totalPengungsi);
 }
 
-// ── INIT ─────────────────────────────────────────────────────
+// INIT
 
 async function initTable() {
   allEvents = await window.floodDB.getAll('flood_events');

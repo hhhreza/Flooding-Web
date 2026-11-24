@@ -1,10 +1,8 @@
-// ============================================================
 // missing.js — Missing persons search & report feature
-// ============================================================
 
 let allMissing = [];
 
-// ── RENDER RESULT CARDS ──────────────────────────────────────
+// RENDER RESULT CARDS
 
 function renderMissingCards(data) {
   const container = document.getElementById('hilang-results');
@@ -12,10 +10,9 @@ function renderMissingCards(data) {
 
   if (data.length === 0) {
     container.innerHTML = `
-      <div class="text-center text-gray-400 py-8 bg-white rounded-2xl shadow">
-        <div class="text-4xl mb-2">🔍</div>
-        <div class="font-semibold">Tidak ditemukan data yang sesuai.</div>
-        <div class="text-sm mt-1">Coba ubah kata kunci pencarian.</div>
+      <div class="missing-empty">
+        <strong>Tidak ditemukan data yang sesuai.</strong>
+        <p>Coba ubah kata kunci pencarian.</p>
       </div>`;
     return;
   }
@@ -27,32 +24,28 @@ function renderMissingCards(data) {
       meninggal: 'status-meninggal',
     }[p.status] || 'status-hilang';
 
-    const statusEmoji = { hilang:'🔴', ditemukan:'🟢', meninggal:'⚫' }[p.status] || '🔴';
-    const genderEmoji = p.jenis_kelamin === 'P' ? '👩' : '👨';
-    const avatarBg    = { hilang:'#fee2e2', ditemukan:'#dcfce7', meninggal:'#f3f4f6' }[p.status] || '#fee2e2';
-
     const tgl = p.terakhir_terlihat_tanggal
       ? new Date(p.terakhir_terlihat_tanggal).toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' })
       : '-';
 
     return `<div class="missing-card">
-      <div class="missing-avatar" style="background:${avatarBg}">${genderEmoji}</div>
-      <div class="flex-1 min-w-0">
-        <div class="flex items-start justify-between gap-2 flex-wrap">
-          <div class="font-bold text-primary text-sm">${p.nama_lengkap}</div>
-          <span class="${statusClass}">${statusEmoji} ${p.status.charAt(0).toUpperCase()+p.status.slice(1)}</span>
+      <div class="missing-avatar" aria-hidden="true">${window.escapeHTML(p.jenis_kelamin)}</div>
+      <div class="missing-card__content">
+        <div class="missing-card__head">
+          <strong>${window.escapeHTML(p.nama_lengkap)}</strong>
+          <span class="${statusClass}">${window.escapeHTML(p.status.charAt(0).toUpperCase()+p.status.slice(1))}</span>
         </div>
-        <div class="text-xs text-gray-500 mt-1">${p.usia} tahun · ${p.provinsi} · ${p.kabupaten}</div>
-        <div class="text-xs text-gray-500 mt-1">📍 Terakhir terlihat: <span class="font-medium text-gray-700">${p.terakhir_terlihat_lokasi}</span></div>
-        <div class="text-xs text-gray-400 mt-0.5">🗓️ ${tgl}</div>
-        ${p.keterangan ? `<div class="text-xs text-blue-700 bg-blue-50 rounded px-2 py-1 mt-2">${p.keterangan}</div>` : ''}
-        <div class="text-xs text-gray-400 mt-2">📞 Pelapor: ${p.pelapor_nama} · ${p.pelapor_telp}</div>
+        <p>${window.escapeHTML(p.usia)} tahun | ${window.escapeHTML(p.provinsi)} | ${window.escapeHTML(p.kabupaten)}</p>
+        <p>Terakhir terlihat: ${window.escapeHTML(p.terakhir_terlihat_lokasi)}</p>
+        <p>${window.escapeHTML(tgl)}</p>
+        ${p.keterangan ? `<p>${window.escapeHTML(p.keterangan)}</p>` : ''}
+        <p>Pelapor: ${window.escapeHTML(p.pelapor_nama)} | ${window.escapeHTML(p.pelapor_telp)}</p>
       </div>
     </div>`;
   }).join('');
 }
 
-// ── SEARCH LOGIC ─────────────────────────────────────────────
+// SEARCH LOGIC
 
 function searchMissing() {
   const nama     = (document.getElementById('search-nama')?.value    || '').toLowerCase().trim();
@@ -71,7 +64,7 @@ function searchMissing() {
   renderMissingCards(filtered);
 }
 
-// ── POPULATE PROVINSI DROPDOWNS ──────────────────────────────
+// POPULATE PROVINSI DROPDOWNS
 
 function populateProvinsiDropdowns(missing, events) {
   const provinsiSet = new Set([
@@ -91,7 +84,7 @@ function populateProvinsiDropdowns(missing, events) {
   });
 }
 
-// ── REPORT FORM ───────────────────────────────────────────────
+// REPORT FORM
 
 function bindReportForm() {
   const form = document.getElementById('form-lapor');
@@ -121,15 +114,15 @@ function bindReportForm() {
       allMissing = await window.floodDB.getAll('missing_persons');
       renderMissingCards(allMissing);
       form.reset();
-      showToast('✅ Laporan berhasil dikirim! Data orang hilang telah tercatat.', 'success');
+      showToast('Laporan berhasil dikirim. Data orang hilang telah tercatat.', 'success');
     } catch (err) {
-      showToast('❌ Gagal mengirim laporan. Cek NIK tidak duplikat.', 'error');
+      showToast('Gagal mengirim laporan. Periksa apakah NIK sudah terdaftar.', 'error');
       console.error(err);
     }
   });
 }
 
-// ── INIT ──────────────────────────────────────────────────────
+// INIT
 
 async function initMissing() {
   allMissing = await window.floodDB.getAll('missing_persons');
